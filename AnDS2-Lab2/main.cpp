@@ -129,3 +129,60 @@ public:
         return _data;
     }
 
+    HashTable& operator=(const HashTable& other) {
+        if (this != &other) {
+            _size = other._size;
+            _w = other._w;
+            _modMask = other._modMask;
+            _data = other._data;
+        }
+        return *this;
+    };
+
+    bool erase(const K& key) {
+        size_t index = hash(key);
+        size_t originalIndex = index;
+        while (_data[index]._occupied) {
+            if (_data[index]._key == key) {
+                _data[index]._occupied = false;
+                return true;
+            }
+            index = (index + 1) % _size;
+            if (index == originalIndex) {
+                break;
+            }
+        }
+        return false;
+    };
+
+    T* search(const K& key) {
+        size_t index = hash(key);
+        size_t originalIndex = index;
+        while (_data[index]._occupied) {
+            if (_data[index]._key == key) {
+                return &(_data[index]._value);
+            }
+            index = (index + 1) % _size;
+            if (index == originalIndex) {
+                break;
+            }
+        }
+        return nullptr;
+    };
+
+    int count(const K& key) {
+        size_t index = hash(key);
+        size_t originalIndex = index;
+        int count = 0;
+        while (_data[index]._occupied) {
+            if (_data[index]._key == key) {
+                count++;
+            }
+            index = (index + 1) % _size;
+            if (index == originalIndex) {
+                break;
+            }
+        }
+        return count;
+    };
+};

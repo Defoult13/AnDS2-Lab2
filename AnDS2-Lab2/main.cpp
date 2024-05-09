@@ -69,3 +69,63 @@ public:
         _data.clear();
     }
 
+    void insert(const K& key, const T& value) {
+        size_t index = hash(key);
+        size_t originalIndex = index;
+        while (_data[index]._occupied) {
+            if (_data[index]._key == key) {
+                throw std::runtime_error("Key already exists");
+            }
+            index = (index + 1) % _size;
+            if (index == originalIndex) {
+                throw std::runtime_error("Hash table is full");
+            }
+        }
+        _data[index]._key = key;
+        _data[index]._value = value;
+        _data[index]._occupied = true;
+    };
+
+    void insert_or_assign(const K& key, const T& value) {
+        size_t index = hash(key);
+        size_t originalIndex = index;
+        while (_data[index]._occupied) {
+            if (_data[index]._key == key) {
+                _data[index]._value = value;
+                return;
+            }
+            index = (index + 1) % _size;
+            if (index == originalIndex) {
+                throw std::runtime_error("Hash table is full");
+            }
+        }
+        _data[index]._key = key;
+        _data[index]._value = value;
+        _data[index]._occupied = true;
+    };
+
+    bool contains(const T& value) const {
+        for (const auto& pair : _data) {
+            if (pair._occupied && pair._value == value) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    void print() const {
+        for (const auto& pair : _data) {
+            if (pair._occupied) {
+                std::cout << pair._key << ":" << pair._value << std::endl;
+            }
+        }
+    };
+
+    size_t get_size() const {
+        return _size;
+    }
+
+    std::vector<Pair> get_data() const {
+        return _data;
+    }
+

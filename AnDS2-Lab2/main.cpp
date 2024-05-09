@@ -186,3 +186,108 @@ public:
         return count;
     };
 };
+
+int main() {
+
+    srand(time(nullptr));
+
+    HashTable<int, int> table(10, 3); // Размер таблицы: 10, число битов для сдвига: 3
+
+    table.insert(1, 10);
+    table.insert(2, 20);
+    table.insert(3, 30);
+    table.insert(11, 110);
+    table.insert(22, 220);
+    table.insert(33, 330);
+
+    std::cout << "Hash Table contents:" << std::endl;
+    table.print();
+    std::cout << std::endl;
+
+    // Проверяем функцию contains
+    std::cout << "Contains 20? " << (table.contains(20) ? "Yes" : "No") << std::endl;
+    std::cout << "Contains 30? " << (table.contains(30) ? "Yes" : "No") << std::endl;
+    std::cout << "Contains 50? " << (table.contains(50) ? "Yes" : "No") << std::endl;
+    std::cout << std::endl;
+
+    // Удаляем элементы
+    std::cout << "Erasing key 2: " << (table.erase(2) ? "Success" : "Key not found") << std::endl;
+    std::cout << "Erasing key 3: " << (table.erase(3) ? "Success" : "Key not found") << std::endl;
+    std::cout << "Erasing key 5: " << (table.erase(5) ? "Success" : "Key not found") << std::endl;
+    std::cout << std::endl;
+
+    // Печатаем содержимое таблицы после удаления
+    std::cout << "Hash Table contents after erasing:" << std::endl;
+    table.print();
+    std::cout << std::endl;
+
+    // Проверяем функции search и count
+    int* value_ptr = table.search(11);
+    if (value_ptr) {
+        std::cout << "Value for key 11 found: " << *value_ptr << std::endl;
+    }
+    else {
+        std::cout << "Key 11 not found" << std::endl;
+    }
+
+    int count_11 = table.count(11);
+    std::cout << "Count of key 11: " << count_11 << std::endl;
+
+    int count_33 = table.count(33);
+    std::cout << "Count of key 33: " << count_33 << std::endl;
+
+    const int experiments = 100;
+    const int num_elements = 26;
+
+    HashTable<int, std::string> table_1(5, 3); // Table size: 5, bit shift: 3
+
+    table_1.insert(1, "One");
+    table_1.insert(2, "Two");
+    table_1.insert(3, "Three");
+    table_1.insert(4, "Four");
+    table_1.insert(5, "Five");
+
+    std::cout << "Hash Table_1 contents:" << std::endl;
+    table_1.print();
+    std::cout << std::endl;
+
+    HashTable<char, float> table_char(5, 3); // Table size: 5, bit shift: 3
+
+    table_char.insert('A', 3.14);
+    table_char.insert('B', 2.71);
+    table_char.insert('C', 1.618);
+    table_char.insert('D', 0.577);
+    table_char.insert('E', 1.732);
+
+    std::cout << "Hash Table contents:" << std::endl;
+    table_char.print();
+    std::cout << std::endl;
+
+    std::cout << "Experiment: Collision Counts for Different Table Sizes" << std::endl;
+
+
+    // Размер хэш таблиц должен изменяться от 25 до 475 с шагом 50
+    for (int table_size = 25; table_size <= 475; table_size += 50) {
+        int total_collisions = 0;
+
+        // Повторяем эксперимент experiments раз
+        for (int experiment = 0; experiment < experiments; ++experiment) {
+            // Создаем новую таблицу указанного размера
+            HashTable<int, int> table(table_size, 100, 0);
+
+            // Вставляем 26 случайных элементов в таблицу
+            for (int i = 0; i < num_elements; ++i) {
+                int key = rand() % 1000; // Генерируем случайные ключи
+                try {
+                    table.insert_or_assign(key, i);
+                }
+                catch (const std::runtime_error& e) {
+                    total_collisions++;
+                }
+            }
+        }
+
+        std::cout << "Table size: " << table_size << ", Collisions: " << total_collisions << std::endl;   
+    }
+    return 0;
+}

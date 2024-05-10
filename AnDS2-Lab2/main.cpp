@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <string>
 
 template <typename K, typename T>
 class HashTable {
@@ -16,9 +17,19 @@ class HashTable {
     size_t _w; // Число битов для сдвига
     size_t _modMask; // Маска для модуля
 
-    size_t hash(K key) {
-        // Хеш-функция метода многократного сдвига
-        return ((key * _size) >> _w) & _modMask;
+    size_t hash(const K& key) {
+        // Хеш-функция для различных типов ключей
+        if constexpr (std::is_same_v<K, std::string>) {
+            size_t hash = 0;
+            for (char c : key) {
+                hash = (hash * 31) + c;
+            }
+            return hash % _size;
+        }
+        else {
+            // Хеш-функция для числовых типов
+            return ((key * _size) >> _w) & _modMask;
+        }
     };
 
 public:
@@ -239,7 +250,7 @@ int main() {
     const int experiments = 100;
     const int num_elements = 26;
 
-    HashTable<int, std::string> table_1(5, 3); // Table size: 5, bit shift: 3
+    HashTable<int, std::string> table_1(5, 3); // Размер таблицы: 5, число битов для сдвига: 3
 
     table_1.insert(1, "One");
     table_1.insert(2, "Two");
@@ -251,7 +262,7 @@ int main() {
     table_1.print();
     std::cout << std::endl;
 
-    HashTable<char, float> table_char(5, 3); // Table size: 5, bit shift: 3
+    HashTable<char, float> table_char(5, 3); // Размер таблицы: 5, число битов для сдвига: 3
 
     table_char.insert('A', 3.14);
     table_char.insert('B', 2.71);
@@ -261,6 +272,18 @@ int main() {
 
     std::cout << "Hash Table contents:" << std::endl;
     table_char.print();
+    std::cout << std::endl;
+
+    HashTable<std::string, int> table_str(5, 3); // Размер таблицы: 5, число битов для сдвига: 3
+
+    table_str.insert("One", 1);
+    table_str.insert("Two", 2);
+    table_str.insert("Three", 3);
+    table_str.insert("Four", 4);
+    table_str.insert("Five", 5);
+
+    std::cout << "Hash Table_str contents:" << std::endl;
+    table_str.print();
     std::cout << std::endl;
 
     std::cout << "Experiment: Collision Counts for Different Table Sizes" << std::endl;
